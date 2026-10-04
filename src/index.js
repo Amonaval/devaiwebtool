@@ -1,3 +1,5 @@
 export { ResourceLedger } from './core/resource-ledger.js';
 export { BrowserHooks } from './core/browser-hooks.js';
 export { OwnerRegistry } from './core/owner-registry.js';
+export { ScenarioRunner } from './core/scenario-runner.js';
+export { linearTrend, isProgressiveGrowth } from './core/trend.js';
