@@ -11,10 +11,12 @@ export class BrowserHooks {
   #restorers = [];
   #listeners = new Map();
   #timers = new Map();
+  #ownerProvider;
 
-  constructor({ ledger, globalObject = globalThis }) {
+  constructor({ ledger, globalObject = globalThis, ownerProvider = () => null }) {
     this.#ledger = ledger;
     this.#global = globalObject;
+    this.#ownerProvider = ownerProvider;
   }
 
   install({ listeners = true, timers = true } = {}) {
@@ -38,12 +40,13 @@ export class BrowserHooks {
     ].join('|');
     const ledger = this.#ledger;
     const listeners = this.#listeners;
+    const thisHooksOwner = this.#ownerProvider;
 
     proto.addEventListener = function(type, callback, options) {
       if (callback) {
         const key = keyFor(this, type, callback, options);
         if (!listeners.has(key)) {
-          const r = ledger.create({ type: 'event-listener', subtype: type, metadata: { capture: normalizeCapture(options) } });
+          const r = ledger.create({ type: 'event-listener', subtype: type, metadata: { capture: normalizeCapture(options) }, ownerId: thisHooksOwner() });
           listeners.set(key, r.id);
         }
       }
@@ -76,6 +79,7 @@ export class BrowserHooks {
       if (typeof originalSet !== 'function' || typeof originalClear !== 'function') continue;
       const ledger = this.#ledger;
       const timers = this.#timers;
+      const ownerProvider = this.#ownerProvider;
       const g = this.#global;
       g[setName] = function(callback, delay, ...args) {
         let handle;
@@ -85,7 +89,7 @@ export class BrowserHooks {
           return callback(...cbArgs);
         } : callback;
         handle = originalSet.call(this, wrapped, delay, ...args);
-        const r = ledger.create({ type: 'timer', subtype: type, metadata: { delay: Number(delay) || 0 } });
+        const r = ledger.create({ type: 'timer', subtype: type, metadata: { delay: Number(delay) || 0 }, ownerId: ownerProvider() });
         timers.set(handle, r.id);
         return handle;
       };
