@@ -10,3 +10,4 @@ export { buildEvidenceCapsule, evidenceCapsuleMarkdown, buildLLMInvestigationPro
 export { LitRuntimeAdapter } from './adapters/lit.js';
 export { ReactRuntimeAdapter } from './adapters/react.js';
 export { AngularRuntimeAdapter } from './adapters/angular.js';
+export { RuntimeProofSession } from './proof/runtime-proof-session.js';
