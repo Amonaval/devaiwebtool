@@ -12,11 +12,13 @@ export class BrowserHooks {
   #listeners = new Map();
   #timers = new Map();
   #ownerProvider;
+  #interventionPolicy;
 
-  constructor({ ledger, globalObject = globalThis, ownerProvider = () => null }) {
+  constructor({ ledger, globalObject = globalThis, ownerProvider = () => null, interventionPolicy = null }) {
     this.#ledger = ledger;
     this.#global = globalObject;
     this.#ownerProvider = ownerProvider;
+    this.#interventionPolicy = interventionPolicy;
   }
 
   install({ listeners = true, timers = true } = {}) {
@@ -41,12 +43,15 @@ export class BrowserHooks {
     const ledger = this.#ledger;
     const listeners = this.#listeners;
     const thisHooksOwner = this.#ownerProvider;
+    const interventionPolicy = this.#interventionPolicy;
 
     proto.addEventListener = function(type, callback, options) {
       if (callback) {
         const key = keyFor(this, type, callback, options);
         if (!listeners.has(key)) {
-          const r = ledger.create({ type: 'event-listener', subtype: type, metadata: { capture: normalizeCapture(options) }, ownerId: thisHooksOwner() });
+          const descriptor = { type: 'event-listener', subtype: type, metadata: { capture: normalizeCapture(options) }, ownerId: thisHooksOwner() };
+          if (interventionPolicy?.shouldSuppress(descriptor)) return;
+          const r = ledger.create(descriptor);
           listeners.set(key, r.id);
         }
       }
