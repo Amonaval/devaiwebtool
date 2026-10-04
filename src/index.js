@@ -8,3 +8,4 @@ export { detectLifetimeAnomalies } from './core/anomaly-detector.js';
 export { compareIntervention, InterventionPolicy } from './core/intervention.js';
 export { buildEvidenceCapsule, evidenceCapsuleMarkdown, buildLLMInvestigationPrompt } from './core/evidence-capsule.js';
 export { LitRuntimeAdapter } from './adapters/lit.js';
+export { ReactRuntimeAdapter } from './adapters/react.js';
