@@ -6,3 +6,4 @@ export { linearTrend, isProgressiveGrowth } from './core/trend.js';
 export { EvidenceLevel, classifyEvidence, evidenceName, causalLanguage } from './core/evidence.js';
 export { detectLifetimeAnomalies } from './core/anomaly-detector.js';
 export { compareIntervention, InterventionPolicy } from './core/intervention.js';
+export { buildEvidenceCapsule, evidenceCapsuleMarkdown, buildLLMInvestigationPrompt } from './core/evidence-capsule.js';
